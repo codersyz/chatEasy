@@ -6,17 +6,9 @@
   height: 100%;
   width: 100vw;
 }
-.luckyBtn {
-  width: 240px;
-  margin-top: 5px;
-  padding: 10px;
-  background: #7f95d1;
-  border-radius: 10px;
-  box-sizing: border-box;
-  text-align: center;
-  cursor: pointer;
-  color: #333;
-  height: 50px;
-  line-height: 30px;
-
+.searchArea{
+  position: absolute;
+  bottom:50px;
+  left:0;
+  width:100%
 }

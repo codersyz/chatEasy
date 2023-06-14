@@ -4,10 +4,12 @@ import { LuckyWheel, LuckyGrid } from '@lucky-canvas/react'
 import React, { useState, useRef } from 'react'
 import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
 import routes from './routes';
-import { Layout, Space } from 'antd';
+import { Layout, Space, ConfigProvider } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
+import zhCN from 'antd/locale/zh_CN';
+import 'antd/dist/reset.css';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -51,14 +53,16 @@ function App() {
       </Header>
       <Content style={contentStyle}>
         {/* <BrowserRouter basename='/home'> */}
-        <React.Suspense fallback={null}>
-          <Routes>
-            {routes.map(({ path, component: Component }) => (
-              <Route key={path} element={<Component />} path={path} />
-            ))}
-          </Routes>
-        </React.Suspense>
-        {/* </BrowserRouter> */}
+        <ConfigProvider locale={zhCN}>
+          <React.Suspense fallback={null}>
+            <Routes>
+              {routes.map(({ path, component: Component }) => (
+                <Route key={path} element={<Component />} path={path} />
+              ))}
+            </Routes>
+          </React.Suspense>
+          {/* </BrowserRouter> */}
+        </ConfigProvider>
       </Content>
 
     </Layout>
@@ -75,10 +79,10 @@ const headerStyle = {
 };
 
 const contentStyle = {
-  textAlign: 'center',
-  minHeight: 120,
-  lineHeight: '120px',
-  color: '#fff',
+  // textAlign: 'center',
+  // minHeight: 120,
+  // lineHeight: '120px',
+  // color: '#fff',
   // backgroundColor: '#108ee9',
   height: 'calc(100vh - 64px)'
 };
