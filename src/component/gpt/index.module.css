@@ -1,14 +1,32 @@
 
-.box{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100vw;
-}
 .searchArea{
   position: absolute;
   bottom:50px;
   left:0;
   width:100%
+}
+.chatBox{
+  height: calc(100vh - 64px);
+  padding:0px 50px 120px;
+  background-color: #fff;
+}
+::-webkit-scrollbar { 
+  display: none;
+}
+.chatBox ul{
+  height:100%;
+  overflow-y: scroll;
+}
+.chatBox div{
+  height:100%;
+  overflow-y: hidden;
+}
+.codeSty{
+  background-color: #f4f6f8;
+  padding:10px;
+  border-radius: 6px;
+  color:'black'
+}
+.codeSty p {
+  margin :0
 }

@@ -5,7 +5,7 @@ import React, { useState, useRef } from 'react'
 import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
 import routes from './routes';
 import { Layout, Space, ConfigProvider } from 'antd';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MailOutlined, SettingOutlined, AliwangwangOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
@@ -15,9 +15,9 @@ const { Header, Footer, Sider, Content } = Layout;
 
 function App() {
   const items = [{
-    label: (<Link to='/'>转盘</Link>),
+    label: (<Link to='/'>chatgpt</Link>),
     key: '/',
-    icon: <MailOutlined />,
+    icon: <AliwangwangOutlined />,
   }, {
     label: (<Link to='/lucky-grid'>九宫格</Link>),
     key: '/lucky-grid',
@@ -27,9 +27,9 @@ function App() {
     key: '/slot-machine',
     icon: <SettingOutlined />,
   }, {
-    label: (<Link to='/gpt'>gpt</Link>),
-    key: '/gpt',
-    icon: <SettingOutlined />,
+    label: (<Link to='/turntable'>转盘</Link>),
+    key: '/turntable',
+    icon: <MailOutlined />,
   },]
   const [current, setCurrent] = useState('zp');
 
@@ -38,8 +38,6 @@ function App() {
   };
   const { pathname } = useLocation();
   React.useEffect(() => {
-    console.log(111);
-
     setCurrent(pathname || '/')
   }, [pathname])
 
@@ -47,12 +45,9 @@ function App() {
   return (
     <Layout>
       <Header style={headerStyle}>
-        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
-        {/* <Link to='/'>转盘</Link>
-        <Link to='/about'>about</Link> */}
+        <Menu onClick={onClick} style={{ backgroundColor: '#ADD8E6', color: '#808080' }} selectedKeys={[current]} mode="horizontal" items={items} />
       </Header>
       <Content style={contentStyle}>
-        {/* <BrowserRouter basename='/home'> */}
         <ConfigProvider locale={zhCN}>
           <React.Suspense fallback={null}>
             <Routes>
@@ -61,7 +56,6 @@ function App() {
               ))}
             </Routes>
           </React.Suspense>
-          {/* </BrowserRouter> */}
         </ConfigProvider>
       </Content>
 
@@ -74,7 +68,7 @@ const headerStyle = {
   height: 64,
   paddingInline: 50,
   lineHeight: '64px',
-  backgroundColor: '#fff'
+  backgroundColor: '#ADD8E6'
   // backgroundColor: '#7dbcea',
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 const routes = [
   {
-    path: '/',
+    path: '/turntable',
     component: React.lazy(() => import('./component/home/index.js')),
   },
   {
@@ -14,7 +14,7 @@ const routes = [
     component: React.lazy(() => import('./component/slot-machine/index.js')),
   },
   {
-    path: '/gpt',
+    path: '/',
     component: React.lazy(() => import('./component/gpt/index.js')),
   },
 ];
