@@ -149,36 +149,73 @@ function Gpt() {
       }
 
       axios({
-        url: 'https://gvgvh4.laf.dev/send',
+        url: 'https://gvgvh4.laf.dev/send2',
         method: 'post',
         data: obj,
-        responseType: 'json',
+        // responseType: 'json',
+        responseType: "stream",
         // headers: { "Accept-Encoding": "gzip, deflate, br" },
         onDownloadProgress(progressEvent) {
+
           const xhr = progressEvent.event.target;
           const { responseText, status } = xhr;
-          const data = JSON.parse(JSON.parse(JSON.stringify(responseText)));
-          if (status === 200) {
-            setParentMessageId(data?.id);
+          // const data = JSON.parse(JSON.parse(JSON.stringify(responseText)));
+          const data = responseText;
+          // if (status === 200) {
+          //   setParentMessageId(data?.id);
+          // }
+          const messageArr = data.split('chatGPTParentId=')
+          if (messageArr.length === 2) {
+            setParentMessageId(messageArr[1]);
+            setListMessage((pre) => {
+              const arr = pre.map((item, index) => {
+                if (index === pre.length - 1) {
+                  return {
+                    ...item,
+                    text: status === 200 ? md.render(messageArr[0]) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
+                    status
+                  };
+                }
+                return item;
+              });
+              return arr;
+            });
+          } else {
+            setListMessage((pre) => {
+              const arr = pre.map((item, index) => {
+                if (index === pre.length - 1) {
+                  return {
+                    ...item,
+                    text: status === 200 ? md.render(data) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
+                    status
+                  };
+                }
+                return item;
+              });
+              return arr;
+            });
           }
 
-          setListMessage((pre) => {
-            const arr = pre.map((item, index) => {
-              if (index === pre.length - 1) {
-                return {
-                  ...item,
-                  text: status === 200 ? md.render(data?.text) : `出错啦，请重新请求(openai限制1分钟请求三次)：${data?.error}`,
-                  status
-                };
-              }
-              return item;
-            });
-            return arr;
-          });
-          setLoading(false);
+          // setListMessage((pre) => {
+          //   const arr = pre.map((item, index) => {
+          //     if (index === pre.length - 1) {
+          //       return {
+          //         ...item,
+          //         text: status === 200 ? md.render(data) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
+          //         status
+          //       };
+          //     }
+          //     return item;
+          //   });
+          //   return arr;
+          // });
+          // setLoading(false);
           setScreen();
         },
-      }).then((res) => { });
+      }).then((res) => {
+        setLoading(false);
+        setScreen();
+      });
     } catch (error) {
       // console.log(error);
       return;
