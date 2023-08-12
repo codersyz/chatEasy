@@ -15,7 +15,7 @@ const routes = [
   },
   {
     path: '/',
-    component: React.lazy(() => import('./component/gpt/index.js')),
+    component: React.lazy(() => import('./component/gpt/index.jsx')),
   },
 ];
 

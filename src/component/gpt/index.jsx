@@ -19,6 +19,8 @@ import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
 import moment from 'moment';
 
+import mdKatex from '@traptitech/markdown-it-katex'
+
 const MyList = React.forwardRef((props, ref) => {
   return (
     <List
@@ -32,7 +34,7 @@ const MyList = React.forwardRef((props, ref) => {
         <List.Item>
           <List.Item.Meta
             avatar={<Avatar src={item.avatar} />}
-            title={moment().format('YYYY-MM-DD HH:mm:ss')}
+            title={item.time ?? moment().format('YYYY-MM-DD HH:mm:ss')}
             description={
               item.text ? item?.status === 400 ? (<Alert message={item.text} banner />) : (
                 <div
@@ -51,13 +53,16 @@ const MyList = React.forwardRef((props, ref) => {
 
 const { Search } = Input;
 function Gpt() {
-  const scrollRef = useRef(null);
-  // 创建 cloud 对象 这里需要将 <appid> 替换成自己的 App ID
-  const cloud = new Cloud({
-    baseUrl: 'https://vvxw0a.laf.dev',
-    getAccessToken: () => '', // 这里不需要授权，先填空
-    timeout: 60000,
+  hljs.configure({
+    ignoreUnescapedHTML: true//不要将有关代码块中未转义 HTML 的警告记录到控制台
   });
+  // const scrollRef = useRef(null);
+  // 创建 cloud 对象 这里需要将 <appid> 替换成自己的 App ID
+  // const cloud = new Cloud({
+  //   baseUrl: 'https://gvgvh4.laf.dev',
+  //   getAccessToken: () => '', // 这里不需要授权，先填空
+  //   timeout: 60000,
+  // });
 
   const setScreen = () => {
     setTimeout(() => {
@@ -71,7 +76,7 @@ function Gpt() {
   const [value, setValue] = React.useState('');
   const [listMessage, setListMessage] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-
+  hljs.highlightAll();
   async function send() {
     const question = value;
 
@@ -89,6 +94,7 @@ function Gpt() {
       {
         text: value,
         avatar: '/avatar.png',
+        time: moment().format('YYYY-MM-DD HH:mm:ss')
       },
     ]);
     setScreen();
@@ -102,14 +108,17 @@ function Gpt() {
     // }
     try {
       const md = new MarkdownIt({
+        linkify: true,
         highlight: function (str, lang) {
           if (lang && hljs.getLanguage(lang)) {
             try {
-              return (
-                '<pre class="hljs"><code>' +
-                hljs.highlight(lang, str, true).value +
-                '</code></pre>'
-              );
+              // return (
+              //   '<pre class="hljs"><code>' +
+              //   // hljs.highlight(lang, str, true).value +
+              //   hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+              //   '</code></pre>'
+              // );
+              return highlightBlock(hljs.highlight(str, { language: lang, ignoreIllegals: true, ignoreUnescapedHTML: true }).value, lang)
             } catch (__) { }
           }
           return (
@@ -119,12 +128,18 @@ function Gpt() {
           );
         },
       });
+
+      md.use(mdKatex, { blockClass: 'katexmath-block rounded-md p-[10px]', errorColor: ' #cc0000' })
+      function highlightBlock(str, lang) {
+        return `<pre class="pre-code-box"><div class="pre-code-header"><span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy">复制代码</span></div><div class="pre-code"><code class="hljs code-block-body ${lang}">${str}</code></div></pre>`
+      }
       setListMessage((pre) => {
         return [
           ...pre,
           {
             text: '',
             avatar: '/gpt.png',
+            time: moment().format('YYYY-MM-DD HH:mm:ss')
           },
         ];
       });
@@ -134,7 +149,7 @@ function Gpt() {
       }
 
       axios({
-        url: 'https://vvxw0a.laf.dev/send',
+        url: 'https://gvgvh4.laf.dev/send',
         method: 'post',
         data: obj,
         responseType: 'json',
@@ -152,7 +167,7 @@ function Gpt() {
               if (index === pre.length - 1) {
                 return {
                   ...item,
-                  text: status === 200 ? md.render(data?.text) : `出错啦，请重新请求：${data?.error}`,
+                  text: status === 200 ? md.render(data?.text) : `出错啦，请重新请求(openai限制1分钟请求三次)：${data?.error}`,
                   status
                 };
               }
@@ -165,13 +180,15 @@ function Gpt() {
         },
       }).then((res) => { });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return;
     }
     // res.text = res.text.replace(/\\n/g, "<br/>");
     // 这个是上下文 id
     setParentMessageId(res?.id);
   }
+
+
 
   return (
     <div>
@@ -202,7 +219,7 @@ function Gpt() {
           </List.Item>
         )}
       /> */}
-      <MyList ref={scrollRef} data={listMessage} />
+      <MyList data={listMessage} />
       <Row justify='center' className={styles.searchArea}>
         <Col span={18}>
           <Search
