@@ -6,7 +6,7 @@
   width:100%
 }
 .chatBox{
-  height: calc(100vh - 64px);
+  height: calc(100vh - 100px);
   padding:0px 50px 120px;
   background-color: #fff;
 }

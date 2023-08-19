@@ -1,15 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
-import { LuckyWheel, LuckyGrid } from '@lucky-canvas/react'
 import React, { useState, useRef } from 'react'
 import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
 import routes from './routes';
-import { Layout, Space, ConfigProvider, Row, Col, Button } from 'antd';
+import { Layout, Space, ConfigProvider, Row, Col, Button, Modal } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined, AliwangwangOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
 import 'antd/dist/reset.css';
+import UseKey from './component/gpt/usekey'
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -47,7 +47,7 @@ function App() {
       <Header style={headerStyle}>
         <Row justify='space-between'>
           <Col span={20}><Menu onClick={onClick} style={{ backgroundColor: '#ADD8E6', color: '#808080' }} selectedKeys={[current]} mode="horizontal" items={items} /></Col>
-          <Col span={4}><Button type='link'>登录</Button></Col>
+          <Col span={4}><UseKey></UseKey></Col>
         </Row>
 
       </Header>

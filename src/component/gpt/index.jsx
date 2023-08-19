@@ -11,13 +11,14 @@ import {
   Avatar,
   List,
   Spin,
-  Alert
+  Alert,
 } from 'antd';
 import styles from './index.module.css';
 import axios from 'axios';
 import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
 import moment from 'moment';
+import Marquee from 'react-fast-marquee';
 
 import mdKatex from '@traptitech/markdown-it-katex'
 
@@ -59,7 +60,7 @@ function Gpt() {
   // const scrollRef = useRef(null);
   // 创建 cloud 对象 这里需要将 <appid> 替换成自己的 App ID
   // const cloud = new Cloud({
-  //   baseUrl: 'https://gvgvh4.laf.dev',
+  //   baseUrl: 'https://<appid>.laf.dev',
   //   getAccessToken: () => '', // 这里不需要授权，先填空
   //   timeout: 60000,
   // });
@@ -147,16 +148,19 @@ function Gpt() {
       if (parentMessageId) {
         obj.parentMessageId = parentMessageId;
       }
+      const openaiKey = localStorage.getItem('openaiKey');
+      if (openaiKey) {
+        obj.key = openaiKey
+      }
 
       axios({
-        url: 'https://gvgvh4.laf.dev/send2',
+        url: 'https://gvgvh4.laf.dev/send3',
         method: 'post',
         data: obj,
         // responseType: 'json',
         responseType: "stream",
         // headers: { "Accept-Encoding": "gzip, deflate, br" },
         onDownloadProgress(progressEvent) {
-
           const xhr = progressEvent.event.target;
           const { responseText, status } = xhr;
           // const data = JSON.parse(JSON.parse(JSON.stringify(responseText)));
@@ -167,57 +171,30 @@ function Gpt() {
           const messageArr = data.split('chatGPTParentId=')
           if (messageArr.length === 2) {
             setParentMessageId(messageArr[1]);
-            setListMessage((pre) => {
-              const arr = pre.map((item, index) => {
-                if (index === pre.length - 1) {
-                  return {
-                    ...item,
-                    text: status === 200 ? md.render(messageArr[0]) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
-                    status
-                  };
-                }
-                return item;
-              });
-              return arr;
-            });
-          } else {
-            setListMessage((pre) => {
-              const arr = pre.map((item, index) => {
-                if (index === pre.length - 1) {
-                  return {
-                    ...item,
-                    text: status === 200 ? md.render(data) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
-                    status
-                  };
-                }
-                return item;
-              });
-              return arr;
-            });
           }
-
-          // setListMessage((pre) => {
-          //   const arr = pre.map((item, index) => {
-          //     if (index === pre.length - 1) {
-          //       return {
-          //         ...item,
-          //         text: status === 200 ? md.render(data) : `出错啦，请重新请求(openai限制1分钟请求三次)`,
-          //         status
-          //       };
-          //     }
-          //     return item;
-          //   });
-          //   return arr;
-          // });
-          // setLoading(false);
+          setListMessage((pre) => {
+            const arr = pre.map((item, index) => {
+              if (index === pre.length - 1) {
+                return {
+                  ...item,
+                  text: status === 200 ? md.render(messageArr[0]) : `出错啦，可能是key设置不正确，或者重新请求(openai限制1分钟请求三次)`,
+                  status
+                };
+              }
+              return item;
+            });
+            return arr;
+          });
           setScreen();
         },
       }).then((res) => {
         setLoading(false);
         setScreen();
+      }).catch((res) => {
+        setLoading(false);
       });
     } catch (error) {
-      // console.log(error);
+      setLoading(false);
       return;
     }
     // res.text = res.text.replace(/\\n/g, "<br/>");
@@ -229,33 +206,12 @@ function Gpt() {
 
   return (
     <div>
-      {/* {listMessage?.map((item, index) => {
-        return (
-          <div key={index}>
-            <Avatar src={<img src={item.avatar} alt="chatgpt" />} />
-            <div dangerouslySetInnerHTML={{ __html: item.text }}></div>
-          </div>
-        )
-      })} */}
-      {/* <List
-        pagination={false}
-        ref={scrollRef}
-        dataSource={listMessage}
-        className={styles.chatBox}
-        // noData={false}
-        // locale={{ emptyText: '暂无信息' }}
-        renderItem={(item, index) => (
-          <List.Item>
-            <List.Item.Meta
-              avatar={
-                <Avatar src={item.avatar} />
-              }
-              title={moment().format('YYYY-MM-DD HH:mm:ss')}
-              description={(item.text ? <div className={styles.codeSty} dangerouslySetInnerHTML={{ __html: item.text }}></div> : <Spin />)}
-            />
-          </List.Item>
-        )}
-      /> */}
+      <Alert type="warning" showIcon closable
+        message={
+          <Marquee pauseOnHover gradient={false}>
+            不绑定key默认使用内置的key,绑定key后用的是自己的key,请确保设置的key有效,清除key后使用默认的
+          </Marquee>
+        } />
       <MyList data={listMessage} />
       <Row justify='center' className={styles.searchArea}>
         <Col span={18}>
