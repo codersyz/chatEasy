@@ -30,3 +30,13 @@
 .codeSty p {
   margin :0
 }
+.preCodeHeader{
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.copyBtn{
+  color: blue;
+  cursor: pointer;
+}

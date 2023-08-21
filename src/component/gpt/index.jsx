@@ -19,6 +19,7 @@ import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
 import moment from 'moment';
 import Marquee from 'react-fast-marquee';
+import 'highlight.js/styles/androidstudio.css'//代码主题
 
 import mdKatex from '@traptitech/markdown-it-katex'
 
@@ -132,7 +133,7 @@ function Gpt() {
 
       md.use(mdKatex, { blockClass: 'katexmath-block rounded-md p-[10px]', errorColor: ' #cc0000' })
       function highlightBlock(str, lang) {
-        return `<pre class="pre-code-box"><div class="pre-code-header"><span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy">复制代码</span></div><div class="pre-code"><code class="hljs code-block-body ${lang}">${str}</code></div></pre>`
+        return `<pre class="pre-code-box"><div class="${styles.preCodeHeader}"><span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy ${styles.copyBtn}">复制代码</span></div><div class="pre-code"><code class="hljs code-block-body ${lang}">${str}</code></div></pre>`
       }
       setListMessage((pre) => {
         return [
@@ -201,16 +202,38 @@ function Gpt() {
     // 这个是上下文 id
     setParentMessageId(res?.id);
   }
-
+  const codeArr = document.querySelectorAll('.code-block-body')
+  const copyArr = document.querySelectorAll('.code-block-header__copy')
+  React.useEffect(() => {
+    // for (let i = 0; i < codeArr.length; i++) {
+    //   codeArr[i].addEventListener('mouseover', (e) => {
+    //     console.log('e', e);
+    //     console.log(e.target.innerText);
+    //   })
+    // }
+    for (let i = 0; i < copyArr.length; i++) {
+      const copyFn = (e) => {
+        const text = codeArr[i].innerText
+        navigator.clipboard.writeText(text).then(function () {
+          message.success("复制成功");
+        })
+          .catch(function (err) {
+            message.error("复制出现错误:", err);
+          });
+      }
+      copyArr[i].removeEventListener('click', copyFn)
+      copyArr[i].addEventListener('click', copyFn)
+    }
+  }, [codeArr, copyArr])
 
 
   return (
     <div>
       <Alert type="warning" showIcon closable
         message={
-          <Marquee pauseOnHover gradient={false}>
-            不绑定key默认使用内置的key,绑定key后用的是自己的key,请确保设置的key有效,清除key后使用默认的
-          </Marquee>
+          // <Marquee pauseOnHover gradient={false}>
+          '不绑定key默认使用内置的key,绑定key后用的是自己的key,清除key后使用默认的,请确保设置的key有效'
+          //</Marquee>
         } />
       <MyList data={listMessage} />
       <Row justify='center' className={styles.searchArea}>
