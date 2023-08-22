@@ -211,15 +211,28 @@ function Gpt() {
     //     console.log(e.target.innerText);
     //   })
     // }
+
     for (let i = 0; i < copyArr.length; i++) {
       const copyFn = (e) => {
         const text = codeArr[i].innerText
-        navigator.clipboard.writeText(text).then(function () {
+        // navigator.clipboard.writeText(text).then(function () {
+        //   message.success("复制成功");
+        // })
+        //   .catch(function (err) {
+        //     message.error("复制出现错误:", err);
+        //   });
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed"; // 防止页面滚动
+        document.body.appendChild(textarea);
+        textarea.select();
+        const isCopy = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (isCopy) {
           message.success("复制成功");
-        })
-          .catch(function (err) {
-            message.error("复制出现错误:", err);
-          });
+          return
+        }
+        message.error("复制失败");
       }
       copyArr[i].removeEventListener('click', copyFn)
       copyArr[i].addEventListener('click', copyFn)
